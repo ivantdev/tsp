@@ -1,6 +1,6 @@
 use std::{cell::RefCell, rc::Rc};
 
-struct Node<T>
+pub struct Node<T>
 where
     T: Copy,
 {
@@ -12,12 +12,12 @@ impl<T> Node<T>
 where
     T: Copy,
 {
-    fn new(val: T) -> Self {
+    pub fn new(val: T) -> Self {
         Self { val, next: None }
     }
 }
 
-struct Queue<T>
+pub struct Queue<T>
 where
     T: Copy,
 {
@@ -29,40 +29,48 @@ impl<T> Queue<T>
 where
     T: Copy,
 {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             head: None,
             tail: None,
         }
     }
 
-    fn enqueue(&mut self, val: T) {
+    pub fn enqueue(&mut self, val: T) {
         let new_node = Rc::new(RefCell::new(Node::new(val)));
-        if let Some(tail) = self.tail.as_ref() {
-            tail.borrow_mut().next = Some(Rc::clone(&new_node));
-        } else {
-            self.head = Some(Rc::clone(&new_node));
-            self.tail = Some(Rc::clone(&new_node));
-        }
-    }
-
-    fn dequeue(&mut self) -> Option<T> {
-        match self.head.take() {
-            Some(head) => {
-                self.head = head.borrow_mut().next.take();
-                if self.head.is_none() {
-                    self.tail = None;
-                }
-                Some(head.borrow().val)
+        match &self.tail {
+            Some(_) => {
+                self.tail.as_ref().unwrap().borrow_mut().next = Some(Rc::clone(&new_node));
+                self.tail = Some(Rc::clone(&new_node));
             }
-            None => None,
+            None => {
+                self.head = Some(Rc::clone(&new_node));
+                self.tail = Some(Rc::clone(&new_node));
+            }
         }
     }
 
-    fn peek(&self) -> Option<T> {
+    pub fn dequeue(&mut self) -> Option<T> {
+        let val = self.head.as_ref()?.borrow().val;
+        let next = self.head.as_ref()?.borrow().next.clone();
+        self.head = next;
+        if self.head.is_none() {
+            self.tail = None;
+        }
+        Some(val)
+    }
+
+    pub fn peek(&self) -> Option<T> {
         match &self.head {
             Some(node) => Some(node.borrow().val),
             None => None,
+        }
+    }
+
+    pub fn empty(&self) -> bool {
+        match &self.head {
+            Some(_) => false,
+            None => true,
         }
     }
 }
@@ -93,15 +101,35 @@ mod tests {
     }
 
     #[test]
-    fn test_enqueue_dequeue_and_peek() {
+    fn test_enqueue() {
         let mut q = Queue::new();
         q.enqueue(4);
-        assert_eq!(q.dequeue().unwrap(), 4);
         q.enqueue(5);
-        q.dequeue();
-        assert_eq!(q.dequeue().unwrap_or(10), 10);
         q.enqueue(6);
-        assert_eq!(q.peek().unwrap(), 6);
+        q.enqueue(9);
+        assert_eq!(q.peek().unwrap(), 4);
+    }
+
+    #[test]
+    fn test_dequeue() {
+        let mut q = Queue::new();
+        q.enqueue(4);
+        q.enqueue(5);
+        q.enqueue(6);
+        q.enqueue(9);
+        assert_eq!(q.dequeue().unwrap(), 4);
+        assert_eq!(q.dequeue().unwrap(), 5);
         assert_eq!(q.dequeue().unwrap(), 6);
+        assert_eq!(q.dequeue().unwrap(), 9);
+        assert_eq!(q.dequeue(), None);
+        assert_eq!(q.empty(), true);
+        q.enqueue(5);
+        assert_eq!(q.dequeue().unwrap(), 5);
+        assert_eq!(q.dequeue(), None);
+        q.enqueue(7);
+        q.enqueue(8);
+        assert_eq!(q.dequeue().unwrap(), 7);
+        assert_eq!(q.dequeue().unwrap(), 8);
+        assert_eq!(q.dequeue(), None);
     }
 }
