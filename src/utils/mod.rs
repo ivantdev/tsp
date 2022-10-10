@@ -18,7 +18,7 @@ impl Coordinate {
 #[derive(Debug)]
 pub struct Graph {
     pub edges: Vec<Vec<usize>>,
-    pub weights: Vec<Vec<u16>>,
+    pub weights: Vec<Vec<u32>>,
 }
 
 pub fn create_adjacency_list_from_files(
@@ -46,7 +46,7 @@ pub fn create_adjacency_list_from_files(
         split_line.next(); // a
         let source: usize = split_line.next().unwrap().parse()?;
         let destination: usize = split_line.next().unwrap().parse()?;
-        let weight = split_line.next().unwrap().parse::<u16>()?;
+        let weight = split_line.next().unwrap().parse::<u32>()?;
         edges[source - 1].push(destination - 1);
         weights[source - 1].push(weight);
     }
@@ -68,9 +68,9 @@ pub fn create_coordinates_hashmap_from_file(
         let id = split_line.next().unwrap().parse::<u32>()?;
         //
         let mut longitude = split_line.next().unwrap().to_string();
-        let longitude = normalize_coordinate(&mut longitude, 2)?;
+        let longitude = normalize_coordinate(&mut longitude)?;
         let mut latitude = split_line.next().unwrap().to_string();
-        let latitude = normalize_coordinate(&mut latitude, 2)?;
+        let latitude = normalize_coordinate(&mut latitude)?;
 
         let coordinate = Coordinate {
             latitude,
@@ -85,14 +85,19 @@ pub fn create_coordinates_hashmap_from_file(
 
 // converts a coordinate string like "72346276" into a decimal number like 72.346276
 // depending on the position argument to add the point
-fn normalize_coordinate(
-    coordinate: &mut String,
-    position: usize,
-) -> Result<f64, std::num::ParseFloatError> {
+fn normalize_coordinate(coordinate: &mut String) -> Result<f64, std::num::ParseFloatError> {
     if coordinate.starts_with("-") {
-        coordinate.insert(position + 1, '.');
+        if coordinate.len() == 9 {
+            coordinate.insert(3, '.');
+        } else {
+            coordinate.insert(4, '.');
+        }
     } else {
-        coordinate.insert(position, '.');
+        if coordinate.len() == 8 {
+            coordinate.insert(2, '.');
+        } else {
+            coordinate.insert(3, '.');
+        }
     }
 
     coordinate.as_str().parse::<f64>()
@@ -104,14 +109,26 @@ mod tests {
 
     #[test]
     fn normalize_coordinate_correct() {
-        let res = normalize_coordinate(&mut "17682718".to_string(), 2).unwrap();
+        let res = normalize_coordinate(&mut "17682718".to_string()).unwrap();
         assert_eq!(res, 17.682718)
     }
 
     #[test]
     fn normalize_negative_coordinate_correct() {
-        let res = normalize_coordinate(&mut "-17682718".to_string(), 2).unwrap();
+        let res = normalize_coordinate(&mut "-17682718".to_string()).unwrap();
         assert_eq!(res, -17.682718)
+    }
+
+    #[test]
+    fn normalize_coordinate_with_integer_part_equal_to_three_correct() {
+        let res = normalize_coordinate(&mut "-109630081".to_string()).unwrap();
+        assert_eq!(res, -109.630081)
+    }
+
+    #[test]
+    fn normalize_negative_coordinate_with_integer_part_equal_to_three_correct() {
+        let res = normalize_coordinate(&mut "109630081".to_string()).unwrap();
+        assert_eq!(res, 109.630081)
     }
 
     #[test]
