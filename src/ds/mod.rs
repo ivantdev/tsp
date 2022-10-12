@@ -75,6 +75,78 @@ where
     }
 }
 
+pub struct MinHeap {
+    heap: Vec<i32>,
+}
+
+impl MinHeap {
+    pub fn new() -> Self {
+        Self { heap: vec![] }
+    }
+    pub fn insert(&mut self, el: i32) {
+        self.heap.push(el);
+        self.sift_up(self.heap.len() - 1);
+    }
+
+    pub fn get_min(&self) -> i32 {
+        self.heap[0]
+    }
+
+    pub fn extract_min(&mut self) -> i32 {
+        let el = self.heap[0];
+        let len = self.heap.len();
+        self.heap.swap(0, len - 1);
+        self.heap.pop();
+        self.sift_down(0);
+        el
+    }
+
+    pub fn change_priority(&mut self, i: usize, new_p: i32) {
+        let old_p = self.heap[i];
+        self.heap[i] = new_p;
+        if new_p < old_p {
+            self.sift_up(i);
+        } else {
+            self.sift_down(i);
+        }
+    }
+
+    fn sift_up(&mut self, mut i: usize) {
+        while i > 0 && self.heap[self.parent(i)] > self.heap[i] {
+            let parent = self.parent(i);
+            self.heap.swap(parent, i);
+            i = parent;
+        }
+    }
+
+    fn sift_down(&mut self, i: usize) {
+        let mut min_index = i;
+        let left = self.left_child(i);
+        if left < self.heap.len() && self.heap[left] < self.heap[min_index] {
+            min_index = left;
+        }
+        let right = self.right_child(i);
+        if right < self.heap.len() && self.heap[right] < self.heap[min_index] {
+            min_index = right;
+        }
+        if i != min_index {
+            self.heap.swap(i, min_index);
+            self.sift_down(min_index);
+        }
+    }
+
+    fn left_child(&self, i: usize) -> usize {
+        2 * i + 1
+    }
+    fn right_child(&self, i: usize) -> usize {
+        2 * i + 2
+    }
+
+    fn parent(&self, i: usize) -> usize {
+        (i - 1) / 2
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -131,5 +203,48 @@ mod tests {
         assert_eq!(q.dequeue().unwrap(), 7);
         assert_eq!(q.dequeue().unwrap(), 8);
         assert_eq!(q.dequeue(), None);
+    }
+
+    #[test]
+    fn test_insert_priority_queue() {
+        let mut p = MinHeap::new();
+        p.insert(5);
+        assert_eq!(p.get_min(), 5);
+        p.insert(9);
+        assert_eq!(p.get_min(), 5);
+        p.insert(3);
+        assert_eq!(p.get_min(), 3);
+        p.insert(98);
+        assert_eq!(p.get_min(), 3);
+        p.insert(1);
+        assert_eq!(p.get_min(), 1);
+    }
+
+    #[test]
+    fn test_extract_min_priority_queue() {
+        let mut p = MinHeap::new();
+        p.insert(5);
+        p.insert(9);
+        p.insert(3);
+        p.insert(98);
+        p.insert(1);
+        assert_eq!(p.extract_min(), 1);
+        assert_eq!(p.extract_min(), 3);
+        assert_eq!(p.extract_min(), 5);
+        assert_eq!(p.extract_min(), 9);
+        assert_eq!(p.extract_min(), 98);
+    }
+
+    #[test]
+    fn test_change_priority_priority_queue() {
+        let mut p = MinHeap::new();
+        p.insert(5);
+        p.insert(9);
+        p.insert(3);
+        p.insert(98);
+        p.insert(1);
+        p.change_priority(0, 100);
+        assert_eq!(p.extract_min(), 3);
+        assert_eq!(p.extract_min(), 5);
     }
 }
