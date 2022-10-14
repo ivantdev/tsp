@@ -1,3 +1,4 @@
+pub use crate::ds::graph::Graph;
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
@@ -13,12 +14,6 @@ impl Coordinate {
         let longitude = self.longitude.to_string();
         latitude + " " + &longitude
     }
-}
-
-#[derive(Debug)]
-pub struct Graph {
-    pub edges: Vec<Vec<usize>>,
-    pub weights: Vec<Vec<u32>>,
 }
 
 pub fn create_adjacency_list_from_files(
