@@ -51,16 +51,18 @@ pub fn create_adjacency_list_from_files(
 
 pub fn create_coordinates_hashmap_from_file(
     coordinates_file: &str,
-) -> Result<HashMap<String, u32>, Box<dyn Error>> {
+) -> Result<HashMap<String, usize>, Box<dyn Error>> {
     let file = fs::read_to_string(coordinates_file)?;
     let mut coordinates_hashmap = HashMap::new();
     for line in file.lines() {
         if !line.starts_with('v') {
             continue;
         }
+
         let mut split_line = line.split_whitespace();
         split_line.next(); // v
-        let id = split_line.next().unwrap().parse::<u32>()?;
+
+        let id = split_line.next().unwrap().parse::<usize>()?;
         //
         let mut longitude = split_line.next().unwrap().to_string();
         let longitude = normalize_coordinate(&mut longitude)?;
@@ -73,6 +75,35 @@ pub fn create_coordinates_hashmap_from_file(
         };
 
         coordinates_hashmap.insert(coordinate.to_string(), id);
+    }
+
+    Ok(coordinates_hashmap)
+}
+
+pub fn create_id_to_coordinates_hashmap_from_file(
+    coordinates_file: &str,
+) -> Result<HashMap<usize, String>, Box<dyn Error>> {
+    let file = fs::read_to_string(coordinates_file)?;
+    let mut coordinates_hashmap = HashMap::new();
+    for line in file.lines() {
+        if !line.starts_with('v') {
+            continue;
+        }
+        let mut split_line = line.split_whitespace();
+        split_line.next(); // v
+        let id = split_line.next().unwrap().parse::<usize>()?;
+        //
+        let mut longitude = split_line.next().unwrap().to_string();
+        let longitude = normalize_coordinate(&mut longitude)?;
+        let mut latitude = split_line.next().unwrap().to_string();
+        let latitude = normalize_coordinate(&mut latitude)?;
+
+        let coordinate = Coordinate {
+            latitude,
+            longitude,
+        };
+
+        coordinates_hashmap.insert(id, coordinate.to_string());
     }
 
     Ok(coordinates_hashmap)
@@ -129,7 +160,10 @@ mod tests {
     #[test]
     fn create_coordinates_hashmap_from_file_correct() {
         let map = create_coordinates_hashmap_from_file("USA-road-d.NY.co").unwrap();
-        assert_eq!(map.contains_key("40.897199 -73.975982"), true)
+        assert_eq!(map.contains_key("40.897199 -73.975982"), true);
+        assert_eq!(map.contains_key("40.596078 -74.083501"), true);
+        assert_eq!(map.contains_key("41.086098 -73.530538"), true);
+        assert_eq!(map.contains_key("40.59695 -74.065046"), true)
     }
 
     #[test]
