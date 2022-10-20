@@ -1,0 +1,13 @@
+CREATE TABLE users (
+    id SERIAL,
+    name VARCHAR(100) NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    salt VARCHAR(32) NOT NULL,
+    password VARCHAR(128) NOT NULL,
+    picture TEXT NULL,
+    created_on TIMESTAMP NOT NULL,
+    staff BOOLEAN NOT NULL DEFAULT FALSE,
+    admin BOOLEAN NOT NULL DEFAULT FALSE,
+    CONSTRAINT users_pk PRIMARY KEY (id)
+);
