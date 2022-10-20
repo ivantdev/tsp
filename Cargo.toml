@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 queues = "1.0.2"
 serde = "1.0.130"
+kd-tree = "0.4.2"
 
 [dependencies.rocket]
 version = "0.5.0-rc.2"
