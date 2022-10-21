@@ -1,4 +1,7 @@
-use crate::{algo::shortest_paths, global::Data};
+pub mod singup;
+pub mod login;
+
+use crate::{algo::shortest_paths, global::Data, utils::Coordinate};
 use rocket::{
     post,
     response::status,
@@ -22,17 +25,38 @@ pub struct DijkstraOutput {
 }
 
 #[post("/shortestpath", data = "<input>")]
-pub fn shortestpath(
-    input: Json<DijkstraInput<'_>>,
-    state: &State<Data>,
-) -> Result<Json<DijkstraOutput>, status::BadRequest<String>> {
+pub fn shortestpath( input: Json<DijkstraInput<'_>>, state: &State<Data>, ) -> Result<Json<DijkstraOutput>, status::BadRequest<String>> {
     let source = input.source;
     let destination = input.destination;
-    //try to find the source and destination in the hashmap
-    let source = state.map_coordinates_to_id.get(source);
-    let destination = state.map_coordinates_to_id.get(destination);
-    println!("source: {:?}", source);
-    println!("destination: {:?}", destination);
+
+    //try to approximate coordinate using kd-tree
+    let src_inf: Vec<&str> = source.split(' ').collect();
+    let dest_inf: Vec<&str> = destination.split(' ').collect();
+    if src_inf.len() != 2 || dest_inf.len() != 2 {
+        return Err(status::BadRequest(Some(
+            "Invalid source or destination".to_string(),
+        )));
+    }
+    let src_lat: f64 = src_inf[0].parse().unwrap();
+    let src_long: f64 = src_inf[1].parse().unwrap();
+    let dest_lat: f64 = dest_inf[0].parse().unwrap();
+    let dest_long: f64 = dest_inf[1].parse().unwrap();
+    let src_item = state.kd_tree.nearest(&[src_lat, src_long]).unwrap();
+    let dest_item = state.kd_tree.nearest(&[dest_lat, dest_long]).unwrap();
+    let source = src_item.item;
+    let destination = dest_item.item;
+    let source = Coordinate {
+        latitude: source[0],
+        longitude: source[1],
+    };
+    let destination = Coordinate {
+        latitude: destination[0],
+        longitude: destination[1],
+    };
+
+    let source = state.map_coordinates_to_id.get(&source.to_string());
+    let destination = state.map_coordinates_to_id.get(&destination.to_string());
+
     match (source, destination) {
         (Some(source), Some(destination)) => {
             let source = *source;

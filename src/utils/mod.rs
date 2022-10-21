@@ -1,4 +1,9 @@
+pub mod salt;
+pub mod hash;
+pub mod response;
+
 pub use crate::ds::graph::Graph;
+use kd_tree::KdTree;
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
@@ -129,6 +134,30 @@ fn normalize_coordinate(coordinate: &mut String) -> Result<f64, std::num::ParseF
     coordinate.as_str().parse::<f64>()
 }
 
+pub fn create_kd_tree_from_file(
+    coordinates_file: &str,
+) -> Result<KdTree<[f64; 2]>, Box<dyn Error>> {
+    let file = fs::read_to_string(coordinates_file)?;
+    let mut points = vec![];
+    for line in file.lines() {
+        if !line.starts_with('v') {
+            continue;
+        }
+        let mut split_line = line.split_whitespace();
+        split_line.next(); // v
+        split_line.next(); // id
+
+        let mut longitude = split_line.next().unwrap().to_string();
+        let longitude = normalize_coordinate(&mut longitude)?;
+        let mut latitude = split_line.next().unwrap().to_string();
+        let latitude = normalize_coordinate(&mut latitude)?;
+
+        points.push([latitude, longitude])
+    }
+    let tree = KdTree::build_by_ordered_float(points);
+    Ok(tree)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -175,5 +204,13 @@ mod tests {
         let pos = graph.edges[0].iter().position(|&dest| dest == 1).unwrap();
 
         assert_eq!(graph.weights[0][pos], 803);
+    }
+
+    #[test]
+    fn create_kd_tree_from_file_correct() {
+        let tree = create_kd_tree_from_file("USA-road-d.NY.co").unwrap();
+        let point = [40.914191, -74.093373];
+        let found = tree.nearest(&point).unwrap();
+        assert_eq!(found.item, &[40.914198, -74.093386]);
     }
 }

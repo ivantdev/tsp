@@ -5,4 +5,5 @@ pub struct Data {
     pub graph: Graph,
     pub map_coordinates_to_id: HashMap<String, usize>,
     pub map_id_to_coordinates: HashMap<usize, String>,
+    pub kd_tree: kd_tree::KdTree2<[f64; 2]>,
 }
