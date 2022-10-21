@@ -1,3 +1,6 @@
+pub mod singup;
+pub mod login;
+
 use crate::{algo::shortest_paths, global::Data, utils::Coordinate};
 use rocket::{
     post,
@@ -22,10 +25,7 @@ pub struct DijkstraOutput {
 }
 
 #[post("/shortestpath", data = "<input>")]
-pub fn shortestpath(
-    input: Json<DijkstraInput<'_>>,
-    state: &State<Data>,
-) -> Result<Json<DijkstraOutput>, status::BadRequest<String>> {
+pub fn shortestpath( input: Json<DijkstraInput<'_>>, state: &State<Data>, ) -> Result<Json<DijkstraOutput>, status::BadRequest<String>> {
     let source = input.source;
     let destination = input.destination;
 
