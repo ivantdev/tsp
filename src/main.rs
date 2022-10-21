@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate rocket;
 extern crate queues;
-use tsp::{global::Data, routes::shortestpath, utils};
+use tsp::{global::Data, routes::shortestpath, utils, routes::singup::sing_up, routes::login::login};
 
 #[launch]
 fn rocket() -> _ {
@@ -23,4 +23,7 @@ fn rocket() -> _ {
     rocket::build()
         .manage(state)
         .mount("/", routes![shortestpath])
+        .mount("/singup", routes![sing_up])
+        .mount("/login", routes![login])
+    
 }

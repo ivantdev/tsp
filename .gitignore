@@ -1,3 +1,9 @@
 /target
 *.co
 *.gr
+
+# vscode settings
+.vscode
+
+# environment variables
+.env
