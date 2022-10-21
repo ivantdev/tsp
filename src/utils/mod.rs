@@ -1,6 +1,6 @@
-pub mod salt;
 pub mod hash;
 pub mod response;
+pub mod salt;
 
 pub use crate::ds::graph::Graph;
 use kd_tree::KdTree;
@@ -117,18 +117,16 @@ pub fn create_id_to_coordinates_hashmap_from_file(
 // converts a coordinate string like "72346276" into a decimal number like 72.346276
 // depending on the position argument to add the point
 fn normalize_coordinate(coordinate: &mut String) -> Result<f64, std::num::ParseFloatError> {
-    if coordinate.starts_with("-") {
+    if coordinate.starts_with('-') {
         if coordinate.len() == 9 {
             coordinate.insert(3, '.');
         } else {
             coordinate.insert(4, '.');
         }
+    } else if coordinate.len() == 8 {
+        coordinate.insert(2, '.');
     } else {
-        if coordinate.len() == 8 {
-            coordinate.insert(2, '.');
-        } else {
-            coordinate.insert(3, '.');
-        }
+        coordinate.insert(3, '.');
     }
 
     coordinate.as_str().parse::<f64>()

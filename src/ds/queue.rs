@@ -44,10 +44,7 @@ where
     }
 
     pub fn peek(&self) -> Option<T> {
-        match &self.head {
-            Some(node) => Some(node.borrow().val),
-            None => None,
-        }
+        self.head.as_ref().map(|node| node.borrow().val)
     }
 
     pub fn empty(&self) -> bool {

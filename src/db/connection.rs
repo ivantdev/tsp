@@ -1,7 +1,7 @@
+use core::panic;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenvy::dotenv;
-use core::panic;
 use std::env;
 
 pub fn establish_connection() -> PgConnection {

@@ -42,7 +42,7 @@ impl<T: Prioritiness + Copy> MinHeap<T> {
         let len = self.heap.len();
         self.heap.swap(0, len - 1);
         self.heap.pop();
-        if self.heap.len() > 0 {
+        if !self.heap.is_empty() {
             self.internal_map.insert(self.heap[0].id(), 0);
             self.sift_down(0);
         }

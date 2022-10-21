@@ -1,4 +1,4 @@
-use sha2::{Sha512, Digest};
+use sha2::{Digest, Sha512};
 
 fn hash(s: &String) -> String {
     let mut hasher = Sha512::new();

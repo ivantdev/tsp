@@ -1,6 +1,6 @@
-use diesel::prelude::*;
-use chrono::{self, NaiveDateTime};
 use crate::schema::users;
+use chrono::{self, NaiveDateTime};
+use diesel::prelude::*;
 
 #[derive(Queryable)]
 pub struct User {
@@ -10,13 +10,11 @@ pub struct User {
     pub email: String,
     pub salt: String,
     pub password: String,
-    pub picture:  Option<String>,
+    pub picture: Option<String>,
     pub created_on: NaiveDateTime,
     pub staff: bool,
     pub admin: bool,
 }
-
-
 
 #[derive(Insertable)]
 #[diesel(table_name = users)]

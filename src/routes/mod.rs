@@ -1,5 +1,5 @@
-pub mod singup;
 pub mod login;
+pub mod signup;
 
 use crate::{algo::shortest_paths, global::Data, utils::Coordinate};
 use rocket::{
@@ -25,7 +25,10 @@ pub struct DijkstraOutput {
 }
 
 #[post("/shortestpath", data = "<input>")]
-pub fn shortestpath( input: Json<DijkstraInput<'_>>, state: &State<Data>, ) -> Result<Json<DijkstraOutput>, status::BadRequest<String>> {
+pub fn shortestpath(
+    input: Json<DijkstraInput<'_>>,
+    state: &State<Data>,
+) -> Result<Json<DijkstraOutput>, status::BadRequest<String>> {
     let source = input.source;
     let destination = input.destination;
 
@@ -51,11 +54,9 @@ pub fn shortestpath( input: Json<DijkstraInput<'_>>, state: &State<Data>, ) -> R
                 distance: shortest_path.0,
             }))
         }
-        _ => {
-            return Err(status::BadRequest(Some(
-                "Invalid source or destination".to_string(),
-            )))
-        }
+        _ => Err(status::BadRequest(Some(
+            "Invalid source or destination".to_string(),
+        ))),
     }
 }
 
