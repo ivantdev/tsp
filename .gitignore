@@ -7,3 +7,6 @@
 
 # environment variables
 .env
+
+
+.devcontainer

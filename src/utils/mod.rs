@@ -1,5 +1,6 @@
 pub mod hash;
 pub mod response;
+pub mod claims;
 pub mod salt;
 
 pub use crate::ds::graph::Graph;
