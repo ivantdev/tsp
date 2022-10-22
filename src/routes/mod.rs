@@ -1,5 +1,5 @@
-pub mod signup;
 pub mod login;
+pub mod signup;
 
 use crate::{algo::shortest_paths, global::Data, utils::Coordinate};
 use rocket::{
@@ -25,34 +25,15 @@ pub struct DijkstraOutput {
 }
 
 #[post("/shortestpath", data = "<input>")]
-pub fn shortestpath( input: Json<DijkstraInput<'_>>, state: &State<Data>, ) -> Result<Json<DijkstraOutput>, status::BadRequest<String>> {
+pub fn shortestpath(
+    input: Json<DijkstraInput<'_>>,
+    state: &State<Data>,
+) -> Result<Json<DijkstraOutput>, status::BadRequest<String>> {
     let source = input.source;
     let destination = input.destination;
 
-    //try to approximate coordinate using kd-tree
-    let src_inf: Vec<&str> = source.split(' ').collect();
-    let dest_inf: Vec<&str> = destination.split(' ').collect();
-    if src_inf.len() != 2 || dest_inf.len() != 2 {
-        return Err(status::BadRequest(Some(
-            "Invalid source or destination".to_string(),
-        )));
-    }
-    let src_lat: f64 = src_inf[0].parse().unwrap();
-    let src_long: f64 = src_inf[1].parse().unwrap();
-    let dest_lat: f64 = dest_inf[0].parse().unwrap();
-    let dest_long: f64 = dest_inf[1].parse().unwrap();
-    let src_item = state.kd_tree.nearest(&[src_lat, src_long]).unwrap();
-    let dest_item = state.kd_tree.nearest(&[dest_lat, dest_long]).unwrap();
-    let source = src_item.item;
-    let destination = dest_item.item;
-    let source = Coordinate {
-        latitude: source[0],
-        longitude: source[1],
-    };
-    let destination = Coordinate {
-        latitude: destination[0],
-        longitude: destination[1],
-    };
+    let source = approximate_coordinate(state, source)?;
+    let destination = approximate_coordinate(state, destination)?;
 
     let source = state.map_coordinates_to_id.get(&source.to_string());
     let destination = state.map_coordinates_to_id.get(&destination.to_string());
@@ -73,10 +54,30 @@ pub fn shortestpath( input: Json<DijkstraInput<'_>>, state: &State<Data>, ) -> R
                 distance: shortest_path.0,
             }))
         }
-        _ => {
-            Err(status::BadRequest(Some(
-                "Invalid source or destination".to_string(),
-            )))
-        }
+        _ => Err(status::BadRequest(Some(
+            "Invalid source or destination".to_string(),
+        ))),
     }
+}
+
+fn approximate_coordinate(
+    state: &State<Data>,
+    coordinate: &str,
+) -> Result<Coordinate, status::BadRequest<String>> {
+    //try to approximate coordinate using kd-tree
+    let coordinate: Vec<&str> = coordinate.split(' ').collect();
+    if coordinate.len() != 2 {
+        return Err(status::BadRequest(Some(
+            "Invalid source or destination".to_string(),
+        )));
+    }
+    let latitude: f64 = coordinate[0].parse().unwrap();
+    let longitude: f64 = coordinate[1].parse().unwrap();
+    let coordinate_and_distance = state.kd_tree.nearest(&[latitude, longitude]).unwrap();
+    let coordinate = coordinate_and_distance.item;
+    let coordinate = Coordinate {
+        latitude: coordinate[0],
+        longitude: coordinate[1],
+    };
+    Ok(coordinate)
 }

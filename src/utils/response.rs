@@ -9,5 +9,5 @@ pub struct OkResponse {
 
 #[derive(Serialize)]
 pub struct ErrorResponse {
-    pub message: String
+    pub message: String,
 }

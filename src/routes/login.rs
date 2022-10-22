@@ -10,7 +10,7 @@ use std::env;
 #[serde(crate = "rocket::serde")]
 pub struct Body<'r> {
     pub email: &'r str,
-    pub password: &'r str
+    pub password: &'r str,
 }
 
 #[post("/", data="<body>")]
@@ -56,5 +56,4 @@ pub fn login(body: Json<Body<'_>>) -> Result<Json<OkResponse>, Custom<Json<Error
             Err(Custom(Status::Unauthorized, Json(response)))
         },
     }
-
 }
