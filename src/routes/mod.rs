@@ -1,4 +1,4 @@
-pub mod singup;
+pub mod signup;
 pub mod login;
 
 use crate::{algo::shortest_paths, global::Data, utils::Coordinate};
@@ -74,7 +74,7 @@ pub fn shortestpath( input: Json<DijkstraInput<'_>>, state: &State<Data>, ) -> R
             }))
         }
         _ => {
-            return Err(status::BadRequest(Some(
+            Err(status::BadRequest(Some(
                 "Invalid source or destination".to_string(),
             )))
         }

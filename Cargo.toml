@@ -14,11 +14,11 @@ diesel = { version = "2.0.0", features = ["postgres","chrono"] }
 dotenvy = "0.15"
 chrono = "^0"
 jsonwebtoken = "8.1.1"
+rocket_cors = { git = "https://github.com/lawliet89/rocket_cors", branch = "master" }
 
 rand = "0.8.5"
 md5 = "0.7.0"
 sha2 = "0.10.6"
-
 regex = "1.6.0"
 
 [dependencies.rocket]
