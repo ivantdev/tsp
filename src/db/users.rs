@@ -35,10 +35,8 @@ pub fn create_user(
         created_on,
     };
 
-    let created_user = diesel::insert_into(users::table)
+    diesel::insert_into(users::table)
         .values(&new_user)
         .get_results::<User>(connection)
-        .expect("Insertion error");
 
-    Ok(created_user)
 }
