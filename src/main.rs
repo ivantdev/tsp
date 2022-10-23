@@ -1,10 +1,10 @@
 #[macro_use]
 extern crate rocket;
 extern crate queues;
-use tsp::{global::Data, utils};
 use rocket::http::Method;
 use rocket_cors::{AllowedOrigins, CorsOptions};
-use tsp::routes::{shortestpath, signup::sign_up, login::login};
+use tsp::routes::{login::login, shortestpath::shortestpath, signup::sign_up};
+use tsp::{global::Data, utils};
 
 #[launch]
 fn rocket() -> _ {
@@ -41,5 +41,4 @@ fn rocket() -> _ {
         .mount("/signup", routes![sign_up])
         .mount("/login", routes![login])
         .attach(cors.to_cors().unwrap())
-    
 }
