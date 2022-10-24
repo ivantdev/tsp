@@ -30,45 +30,62 @@ pub fn sign_up(body: Json<Body<'_>>) -> Result<Json<OkResponse>, Custom<Json<Err
         };
         return Err(Custom(Status::BadRequest, Json(response)))
     }
-
+    
     let salt: String = gen_salt();
     let password_hashed: String = hash_password(&salt, body.password);
-    let new_user = create_user(
-        &body.name.to_string(),
-        &body.username.to_string(),
-        &body.email.to_string(),
-        &salt,
-        &password_hashed,
-        &diesel::dsl::now
-    );
+    match create_user(
+            &body.name.to_string(),
+            &body.username.to_string(),
+            &body.email.to_string(),
+            &salt,
+            &password_hashed,
+            &diesel::dsl::now
+        ) {
+            Ok(user) => {
+                let user = &user[0];
+                let claims: Claims = Claims { 
+                    uid: user.id,
+                    username: user.username.to_string(),
+                    iat: get_current_timestamp(),
+                    exp: get_current_timestamp() + 1814400
+                };
 
-    match new_user {
-        Ok(user) => {
-            let user = &user[0];
-            let claims: Claims = Claims { 
-                uid: user.id,
-                username: user.username.to_string(),
-                iat: get_current_timestamp(),
-                exp: get_current_timestamp() + 1814400
-            };
-
-            dotenv().ok();
-            let secret: String = env::var("SECRET_JWT").expect("SECRET_JWT must be set");
-            let token = encode(&Header::default(), &claims, &EncodingKey::from_secret(secret.as_ref())).unwrap();            
+                dotenv().ok();
+                let secret: String = env::var("SECRET_JWT").expect("SECRET_JWT must be set");
+                let token = encode(&Header::default(), &claims, &EncodingKey::from_secret(secret.as_ref())).unwrap();            
 
 
-            let response = OkResponse{
-                message: "successful register".to_string(),
-                token: Some(token),
-                username: Some(user.username.clone())
-            };
-            Ok(Json(response))
-        },
-        Err(error) => {
-            let response = ErrorResponse {
-                message: format!("unexpected error: {:?}", error)
-            };
-            Err(Custom(Status::BadRequest, Json(response)))
-        },
+                let response = OkResponse{
+                    message: "successful register".to_string(),
+                    token: Some(token),
+                    username: Some(user.username.clone())
+                };
+                Ok(Json(response))
+            },
+            Err(error) => {
+                let message: String;
+                println!("obtuvimos el error: {:?}", error);
+                let error_raw = format!("{:?}", error);
+                if error_raw.contains("UniqueViolation") {
+                    if error_raw.contains("username") {
+                        message = "username already used".to_string();
+                    } else if error_raw.contains("email") {
+                        message = "email already used".to_string();
+                    } else {
+                        message = "Unexpected error".to_string();
+                    }
+
+                } else {
+                    message = "Unexpected error".to_string();
+                }
+                println!("obtuvimos el error: {:?}", error_raw.contains("username"));
+
+    
+                let response = ErrorResponse {
+                    message
+                };
+                Err(Custom(Status::BadRequest, Json(response)))
+            },
+        
     }
 }
