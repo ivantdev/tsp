@@ -3,12 +3,12 @@ use crate::db::models::users::*;
 use crate::schema;
 use diesel::prelude::*;
 
-pub fn get_user(q_email: &str) -> Result<Vec<User>, diesel::result::Error> {
+pub fn get_user(query: &str) -> Result<Vec<User>, diesel::result::Error> {
     use self::schema::users::dsl::*;
 
     let connection = &mut establish_connection();
     let results = users
-        .filter(email.eq(&q_email))
+        .filter(email.eq(&query).or(username.eq(&query)))
         .load::<User>(connection)
         .expect("Error loading user");
 

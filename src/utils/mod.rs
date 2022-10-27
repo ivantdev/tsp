@@ -2,25 +2,18 @@ pub mod hash;
 pub mod response;
 pub mod claims;
 pub mod salt;
+pub mod trip;
+pub mod coordinate;
+pub mod authenticate;
+pub mod auth_token;
 
 pub use crate::ds::graph::Graph;
 use kd_tree::KdTree;
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
+use coordinate::Coordinate;
 
-pub struct Coordinate {
-    pub latitude: f64,
-    pub longitude: f64,
-}
-
-impl Coordinate {
-    pub fn to_string(&self) -> String {
-        let latitude = self.latitude.to_string();
-        let longitude = self.longitude.to_string();
-        latitude + " " + &longitude
-    }
-}
 
 pub fn create_adjacency_list_from_files(
     coordinates_file: &str,
@@ -76,8 +69,8 @@ pub fn create_coordinates_hashmap_from_file(
         let latitude = normalize_coordinate(&mut latitude)?;
 
         let coordinate = Coordinate {
-            latitude,
-            longitude,
+            lat: latitude,
+            lng: longitude,
         };
 
         coordinates_hashmap.insert(coordinate.to_string(), id);
@@ -105,8 +98,8 @@ pub fn create_id_to_coordinates_hashmap_from_file(
         let latitude = normalize_coordinate(&mut latitude)?;
 
         let coordinate = Coordinate {
-            latitude,
-            longitude,
+            lat: latitude,
+            lng: longitude,
         };
 
         coordinates_hashmap.insert(id, coordinate.to_string());
