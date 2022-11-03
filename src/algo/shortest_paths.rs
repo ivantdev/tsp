@@ -3,16 +3,16 @@ pub use crate::ds::priority_queue::MinHeap;
 use crate::ds::priority_queue::Prioritiness;
 use std::error::Error;
 
-const INFINITY: u32 = 9999999;
+const INFINITY: f64 = 9999999.0;
 
 #[derive(Copy, Clone, Debug)]
 pub struct NodeInfo {
-    distance: u32,
+    distance: f64,
     id: usize,
 }
 
 impl NodeInfo {
-    fn new(distance: u32, id: usize) -> Self {
+    fn new(distance: f64, id: usize) -> Self {
         Self { distance, id }
     }
 }
@@ -23,7 +23,7 @@ impl Prioritiness for NodeInfo {
     }
 
     fn change_priority(&mut self, new_p: i32) {
-        self.distance = new_p as u32;
+        self.distance = new_p as f64;
     }
 
     fn id(&self) -> usize {
@@ -35,8 +35,8 @@ pub fn dijkstra(
     g: &Graph,
     src: usize,
     dest: usize,
-) -> Result<(u32, Vec<Option<NodeInfo>>), Box<dyn Error>> {
-    let mut dist = vec![];
+) -> Result<(f64, Vec<Option<NodeInfo>>), Box<dyn Error>> {
+    let mut dist: Vec<f64> = vec![];
     let mut prev = vec![];
     let mut visited = vec![];
     let mut q = MinHeap::new();
@@ -45,7 +45,7 @@ pub fn dijkstra(
         prev.push(None);
         visited.push(false);
         if i == src {
-            dist[i] = 0;
+            dist[i] = 0.0;
         }
         q.insert(NodeInfo::new(dist[i], i));
     }
@@ -95,27 +95,27 @@ mod tests {
     #[test]
     fn test_dijkstra() {
         let mut g = Graph::new(5);
-        g.add_edge(0, 1, 1);
-        g.add_edge(0, 2, 2);
-        g.add_edge(1, 2, 1);
-        g.add_edge(1, 3, 3);
-        g.add_edge(2, 3, 1);
-        g.add_edge(2, 4, 2);
-        g.add_edge(3, 4, 1);
+        g.add_edge(0, 1, 1.0);
+        g.add_edge(0, 2, 2.0);
+        g.add_edge(1, 2, 1.0);
+        g.add_edge(1, 3, 3.0);
+        g.add_edge(2, 3, 1.0);
+        g.add_edge(2, 4, 2.0);
+        g.add_edge(3, 4, 1.0);
         let prev = dijkstra(&g, 0, 4).unwrap();
-        assert_eq!(prev.0, 4);
+        assert_eq!(prev.0, 4.0);
     }
 
     #[test]
     fn test_reconstruct_path() {
         let mut g = Graph::new(5);
-        g.add_edge(0, 1, 1);
-        g.add_edge(0, 2, 2);
-        g.add_edge(1, 2, 1);
-        g.add_edge(1, 3, 3);
-        g.add_edge(2, 3, 1);
-        g.add_edge(2, 4, 2);
-        g.add_edge(3, 4, 1);
+        g.add_edge(0, 1, 1.0);
+        g.add_edge(0, 2, 2.0);
+        g.add_edge(1, 2, 1.0);
+        g.add_edge(1, 3, 3.0);
+        g.add_edge(2, 3, 1.0);
+        g.add_edge(2, 4, 2.0);
+        g.add_edge(3, 4, 1.0);
         let prev = dijkstra(&g, 0, 4).unwrap();
         let path = reconstruct_path(prev.1, 4).unwrap();
         assert_eq!(path, vec![0, 2, 4]);
@@ -124,10 +124,10 @@ mod tests {
     #[test]
     fn test_reconstruct_path2() {
         let mut g = Graph::new(4);
-        g.add_edge(0, 1, 1);
-        g.add_edge(0, 2, 5);
-        g.add_edge(3, 0, 2);
-        g.add_edge(1, 2, 2);
+        g.add_edge(0, 1, 1.0);
+        g.add_edge(0, 2, 5.0);
+        g.add_edge(3, 0, 2.0);
+        g.add_edge(1, 2, 2.0);
         let prev = dijkstra(&g, 0, 2).unwrap();
         let path = reconstruct_path(prev.1, 2).unwrap();
         assert_eq!(path, vec![0, 1, 2]);

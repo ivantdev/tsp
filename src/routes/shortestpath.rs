@@ -1,25 +1,19 @@
-use crate::{algo::shortest_paths, global::Data,
-    utils::{ trip::Trip,
-        coordinate::Coordinate,
-        authenticate::authenticate,
-        response::ErrorResponse,
-        auth_token::Token,
-    }
+use crate::{
+    algo::shortest_paths,
+    global::Data,
+    utils::{
+        auth_token::Token, authenticate::authenticate, coordinate::Coordinate,
+        response::ErrorResponse, trip::Trip,
+    },
 };
-use rocket::{
-    post,
-    response::status::{Custom},
-    serde::json::Json,
-    State,
-    http::Status,
-};
+use rocket::{http::Status, post, response::status::Custom, serde::json::Json, State};
 use serde::Serialize;
 
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
 pub struct DijkstraOutput {
     pub path: Vec<Coordinate>,
-    pub distance: u32,
+    pub distance: f64,
 }
 
 #[post("/shortestpath", data = "<data>")]
@@ -32,13 +26,16 @@ pub fn shortestpath(
     if authenticate(token_raw) {
         let source = &data.locations[0].coordinates;
         let destination = &data.locations[1].coordinates;
-    
+
         let source = approximate_coordinate(state, source);
         let destination = approximate_coordinate(state, destination);
-    
+
+        println!("source: {:?}", source);
+        println!("destination: {:?}", destination);
+
         let source = state.map_coordinates_to_id.get(&source.to_string());
         let destination = state.map_coordinates_to_id.get(&destination.to_string());
-    
+
         match (source, destination) {
             (Some(source), Some(destination)) => {
                 let source = *source;
@@ -49,14 +46,17 @@ pub fn shortestpath(
                 let path: Vec<Coordinate> = path
                     .iter()
                     .map(|x| {
-                        let latlng = state.map_id_to_coordinates.get(x).unwrap().split(' ').collect::<Vec<&str>>();
+                        let latlng = state
+                            .map_id_to_coordinates
+                            .get(x)
+                            .unwrap()
+                            .split(' ')
+                            .collect::<Vec<&str>>();
                         let lat = latlng[0].parse::<f64>().unwrap();
                         let lng = latlng[1].parse::<f64>().unwrap();
-                        Coordinate {
-                            lat,
-                            lng
-                        }
-                    }).collect();
+                        Coordinate { lat, lng }
+                    })
+                    .collect();
 
                 Ok(Json(DijkstraOutput {
                     path,
@@ -76,13 +76,9 @@ pub fn shortestpath(
         };
         Err(Custom(Status::Unauthorized, Json(response)))
     }
-
 }
 
-fn approximate_coordinate(
-    state: &State<Data>,
-    coordinate: &Coordinate,
-) -> Coordinate {
+fn approximate_coordinate(state: &State<Data>, coordinate: &Coordinate) -> Coordinate {
     //try to approximate coordinate using kd-tree
     let latitude: f64 = coordinate.lat;
     let longitude: f64 = coordinate.lng;

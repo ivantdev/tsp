@@ -59,20 +59,20 @@ mod tests {
 
     #[test]
     fn test_bfs() {
-        let g = create_adjacency_list_from_files("USA-road-d.NY.co", "USA-road-d.NY.gr").unwrap();
+        let g = create_adjacency_list_from_files("nodes.txt", "edges.txt").unwrap();
         bfs(&g);
     }
 
     #[test]
     fn test_bfs_with_array_queue() {
-        let g = create_adjacency_list_from_files("USA-road-d.NY.co", "USA-road-d.NY.gr").unwrap();
+        let g = create_adjacency_list_from_files("nodes.txt", "edges.txt").unwrap();
         bfs_with_array_queue(&g);
     }
 
     #[test]
     #[ignore]
     fn test_compare_bfs_runtimes() {
-        let g = create_adjacency_list_from_files("USA-road-d.NY.co", "USA-road-d.NY.gr").unwrap();
+        let g = create_adjacency_list_from_files("nodes.txt", "edges.txt").unwrap();
         compare_bfs_runtimes(&bfs, &bfs_with_array_queue, &g);
     }
 }
