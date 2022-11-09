@@ -2,11 +2,23 @@
 extern crate rocket;
 extern crate queues;
 use dotenvy::dotenv;
+use rocket::fs::NamedFile;
 use rocket::http::Method;
 use rocket_cors::{AllowedOrigins, CorsOptions};
 use std::env;
+use std::path::{Path, PathBuf};
 use tsp::routes::{login::login, shortestpath::shortestpath, signup::sign_up};
 use tsp::{global::Data, utils};
+
+#[get("/")]
+async fn index() -> Option<NamedFile> {
+    NamedFile::open("templates/index.html").await.ok()
+}
+
+#[get("/<file..>", rank = 1)]
+async fn files(file: PathBuf) -> Option<NamedFile> {
+    NamedFile::open(Path::new("static/").join(file)).await.ok()
+}
 
 #[launch]
 fn rocket() -> _ {
@@ -40,8 +52,11 @@ fn rocket() -> _ {
         .allow_credentials(true);
     rocket::build()
         .manage(state)
-        .mount("/", routes![shortestpath])
-        .mount("/signup", routes![sign_up])
-        .mount("/login", routes![login])
+        .mount("/", routes![shortestpath, index, files])
+        .mount("/map", routes![index])
+        .mount("/history", routes![index])
+        .mount("/new-trip", routes![index])
+        .mount("/signup", routes![index, sign_up])
+        .mount("/login", routes![login, index])
         .attach(cors.to_cors().unwrap())
 }
