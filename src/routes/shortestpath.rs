@@ -30,9 +30,6 @@ pub fn shortestpath(
         let source = approximate_coordinate(state, source);
         let destination = approximate_coordinate(state, destination);
 
-        println!("source: {:?}", source);
-        println!("destination: {:?}", destination);
-
         let source = state.map_coordinates_to_id.get(&source.to_string());
         let destination = state.map_coordinates_to_id.get(&destination.to_string());
 
@@ -87,5 +84,16 @@ fn approximate_coordinate(state: &State<Data>, coordinate: &Coordinate) -> Coord
     Coordinate {
         lat: coordinate[0],
         lng: coordinate[1],
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::routes::utils::compare_coordinates_approximation;
+
+    #[test]
+    #[ignore]
+    fn test_compare_coordinates_approximation() {
+        compare_coordinates_approximation();
     }
 }

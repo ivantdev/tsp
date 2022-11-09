@@ -15,8 +15,8 @@ use std::error::Error;
 use std::fs;
 
 pub fn create_adjacency_list_from_files(
-    coordinates_file: &str,
-    arcs_file: &str,
+    coordinates_file: &String,
+    arcs_file: &String,
 ) -> Result<Graph, Box<dyn Error>> {
     let coordinates_file = fs::read_to_string(coordinates_file)?;
     let arcs_file = fs::read_to_string(arcs_file)?;
@@ -42,7 +42,7 @@ pub fn create_adjacency_list_from_files(
 }
 
 pub fn create_coordinates_hashmap_from_file(
-    coordinates_file: &str,
+    coordinates_file: &String,
 ) -> Result<HashMap<String, usize>, Box<dyn Error>> {
     let file = fs::read_to_string(coordinates_file)?;
     let mut coordinates_hashmap = HashMap::new();
@@ -77,7 +77,7 @@ pub fn create_coordinates_hashmap_from_file(
 }
 
 pub fn create_id_to_coordinates_hashmap_from_file(
-    coordinates_file: &str,
+    coordinates_file: &String,
 ) -> Result<HashMap<usize, String>, Box<dyn Error>> {
     let file = fs::read_to_string(coordinates_file)?;
     let mut coordinates_hashmap = HashMap::new();
@@ -109,7 +109,7 @@ pub fn create_id_to_coordinates_hashmap_from_file(
 }
 
 pub fn create_kd_tree_from_file(
-    coordinates_file: &str,
+    coordinates_file: &String,
 ) -> Result<KdTree<[f64; 2]>, Box<dyn Error>> {
     let file = fs::read_to_string(coordinates_file)?;
     let mut points = vec![];
@@ -141,16 +141,20 @@ mod tests {
 
     #[test]
     fn create_coordinates_hashmap_from_file_correct() {
-        let map = create_coordinates_hashmap_from_file("nodes.txt").unwrap();
+        let _map = create_coordinates_hashmap_from_file(&("nodes.txt".to_string())).unwrap();
     }
 
     #[test]
     fn create_adjacency_list_from_files_correct() {
-        let graph = create_adjacency_list_from_files("nodes.txt", "edges.txt").unwrap();
+        let _graph = create_adjacency_list_from_files(
+            &("nodes.txt".to_string()),
+            &("edges.txt".to_string()),
+        )
+        .unwrap();
     }
 
     #[test]
     fn create_kd_tree_from_file_correct() {
-        let tree = create_kd_tree_from_file("nodes.txt").unwrap();
+        let _tree = create_kd_tree_from_file(&("nodes.txt".to_string())).unwrap();
     }
 }

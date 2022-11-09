@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 pub trait Prioritiness {
     fn id(&self) -> usize;
-    fn priority(&self) -> i32;
-    fn change_priority(&mut self, p: i32);
+    fn priority(&self) -> f64;
+    fn change_priority(&mut self, p: f64);
 }
 
 pub struct MinHeap<T>
@@ -49,7 +49,7 @@ impl<T: Prioritiness + Copy> MinHeap<T> {
         el
     }
 
-    pub fn change_priority(&mut self, i: usize, new_p: i32) {
+    pub fn change_priority(&mut self, i: usize, new_p: f64) {
         let index = self.internal_map[&i];
         let old_p = self.heap[index].priority();
         self.heap[index].change_priority(new_p);
@@ -109,16 +109,16 @@ mod tests {
 
     #[derive(Copy, Clone)]
     struct Example {
-        priority: i32,
+        priority: f64,
         id: usize,
     }
 
     impl Prioritiness for Example {
-        fn priority(&self) -> i32 {
-            self.priority
+        fn priority(&self) -> f64 {
+            self.priority as f64
         }
-        fn change_priority(&mut self, p: i32) {
-            self.priority = p;
+        fn change_priority(&mut self, p: f64) {
+            self.priority = p as f64;
         }
         fn id(&self) -> usize {
             self.id
@@ -128,21 +128,33 @@ mod tests {
     #[test]
     fn test_priority_queue() {
         let mut p: MinHeap<Example> = MinHeap::new();
-        p.insert(Example { priority: 5, id: 3 });
-        p.insert(Example { priority: 3, id: 4 });
-        p.insert(Example { priority: 4, id: 5 });
-        p.insert(Example { priority: 1, id: 6 });
+        p.insert(Example {
+            priority: 5.0,
+            id: 3,
+        });
+        p.insert(Example {
+            priority: 3.0,
+            id: 4,
+        });
+        p.insert(Example {
+            priority: 4.0,
+            id: 5,
+        });
+        p.insert(Example {
+            priority: 1.0,
+            id: 6,
+        });
 
-        assert_eq!(p.get_min().priority, 1);
-        p.change_priority(6, -4);
-        assert_eq!(p.get_min().priority, -4);
+        assert_eq!(p.get_min().priority, 1.0);
+        p.change_priority(6, -4.0);
+        assert_eq!(p.get_min().priority, -4.0);
         assert_eq!(p.get_min().id(), 6);
-        p.change_priority(6, 10);
-        assert_eq!(p.get_min().priority, 3);
+        p.change_priority(6, 10.0);
+        assert_eq!(p.get_min().priority, 3.0);
         assert_eq!(p.get_min().id(), 4);
         p.extract_min();
-        p.change_priority(5, -5);
-        assert_eq!(p.get_min().priority, -5);
+        p.change_priority(5, -5.0);
+        assert_eq!(p.get_min().priority, -5.0);
         assert_eq!(p.get_min().id(), 5);
     }
 
@@ -150,22 +162,22 @@ mod tests {
     fn test_priority_queue2() {
         let mut p: MinHeap<Example> = MinHeap::new();
         p.insert(Example {
-            priority: 10,
+            priority: 10.0,
             id: 0,
         });
         p.insert(Example {
-            priority: 20,
+            priority: 20.0,
             id: 1,
         });
-        assert_eq!(p.get_min().priority, 10);
+        assert_eq!(p.get_min().priority, 10.0);
         p.extract_min();
-        assert_eq!(p.get_min().priority, 20);
+        assert_eq!(p.get_min().priority, 20.0);
         p.insert(Example {
-            priority: 30,
+            priority: 30.0,
             id: 2,
         });
-        p.change_priority(2, 0);
-        assert_eq!(p.get_min().priority, 0);
+        p.change_priority(2, 0.0);
+        assert_eq!(p.get_min().priority, 0.0);
         assert_eq!(p.get_min().id(), 2);
     }
 
@@ -173,11 +185,11 @@ mod tests {
     fn test_priority_queue3() {
         let mut p: MinHeap<Example> = MinHeap::new();
         p.insert(Example {
-            priority: 10,
+            priority: 10.0,
             id: 0,
         });
         p.insert(Example {
-            priority: 20,
+            priority: 20.0,
             id: 1,
         });
         p.extract_min();
