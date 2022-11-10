@@ -18,12 +18,12 @@ impl NodeInfo {
 }
 
 impl Prioritiness for NodeInfo {
-    fn priority(&self) -> i32 {
-        self.distance as i32
+    fn priority(&self) -> f64 {
+        self.distance
     }
 
-    fn change_priority(&mut self, new_p: i32) {
-        self.distance = new_p as f64;
+    fn change_priority(&mut self, new_p: f64) {
+        self.distance = new_p
     }
 
     fn id(&self) -> usize {
@@ -63,7 +63,7 @@ pub fn dijkstra(
             if alt < dist[neighbour] {
                 dist[neighbour] = alt;
                 prev[neighbour] = Some(node);
-                q.change_priority(neighbour, alt as i32);
+                q.change_priority(neighbour, alt);
             }
         }
     }

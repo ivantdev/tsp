@@ -85,3 +85,14 @@ fn approximate_coordinate(state: &State<Data>, coordinate: &Coordinate) -> Coord
         id: coordinate[2] as usize,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::routes::utils::compare_coordinates_approximation;
+
+    #[test]
+    #[ignore]
+    fn test_compare_coordinates_approximation() {
+        compare_coordinates_approximation();
+    }
+}
