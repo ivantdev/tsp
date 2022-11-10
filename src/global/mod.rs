@@ -1,9 +1,8 @@
-use crate::ds::graph::Graph;
+use crate::{ds::{graph::Graph, kdtree::KdTree}, utils::coordinate::Coordinate};
 use std::collections::HashMap;
 
 pub struct Data {
     pub graph: Graph,
-    pub map_coordinates_to_id: HashMap<String, usize>,
-    pub map_id_to_coordinates: HashMap<usize, String>,
-    pub kd_tree: kd_tree::KdTree2<[f64; 2]>,
+    pub map_id_to_coordinates: HashMap<usize, Coordinate>,
+    pub kd_tree: KdTree<f64>,
 }

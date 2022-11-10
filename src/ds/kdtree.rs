@@ -2,11 +2,11 @@ use std::{ops::{Add, Sub, Mul}, fmt, cmp::Ordering};
 use pdqselect::select_by;
 
 #[derive(Debug, Clone)]
-pub struct KdTree2<T> where T: Copy + PartialEq, {
+pub struct KdTree<T> where T: Copy + PartialEq, {
     pub root: Vec<Vec<T>>,
 }
 
-impl<T> KdTree2<T> where T: Copy + PartialEq + PartialOrd + fmt::Debug + Sub<Output = T> + Mul<Output = T> + Add<Output = T> {
+impl<T> KdTree<T> where T: Copy + PartialEq + PartialOrd + fmt::Debug + Sub<Output = T> + Mul<Output = T> + Add<Output = T> {
     pub fn new(mut arr: Vec<Vec<T>>) -> Self {
         Self::sort_kdtree(&mut arr, 0);
         Self {

@@ -33,30 +33,26 @@ pub fn shortestpath(
         println!("source: {:?}", source);
         println!("destination: {:?}", destination);
 
-        let source = state.map_coordinates_to_id.get(&source.to_string());
-        let destination = state.map_coordinates_to_id.get(&destination.to_string());
+        let source = state.map_id_to_coordinates.get(&source.id);
+        let destination = state.map_id_to_coordinates.get(&destination.id);
 
         match (source, destination) {
             (Some(source), Some(destination)) => {
-                let source = *source;
-                let destination = *destination;
+                let source = source;
+                let destination = destination;
                 let shortest_path =
-                    shortest_paths::dijkstra(&state.graph, source, destination).unwrap();
-                let path = shortest_paths::reconstruct_path(shortest_path.1, destination).unwrap();
-                let path: Vec<Coordinate> = path
+                    shortest_paths::dijkstra(&state.graph, source.id, destination.id).unwrap();
+                let path = shortest_paths::reconstruct_path(shortest_path.1, destination.id).unwrap();
+                let path = path
                     .iter()
                     .map(|x| {
-                        let latlng = state
+                        let coordenate = state
                             .map_id_to_coordinates
                             .get(x)
-                            .unwrap()
-                            .split(' ')
-                            .collect::<Vec<&str>>();
-                        let lat = latlng[0].parse::<f64>().unwrap();
-                        let lng = latlng[1].parse::<f64>().unwrap();
-                        Coordinate { lat, lng }
-                    })
-                    .collect();
+                            .unwrap();
+                            Coordinate { lat: coordenate.lat, lng: coordenate.lng, id: coordenate.id }
+                    }).collect();
+
 
                 Ok(Json(DijkstraOutput {
                     path,
@@ -82,10 +78,10 @@ fn approximate_coordinate(state: &State<Data>, coordinate: &Coordinate) -> Coord
     //try to approximate coordinate using kd-tree
     let latitude: f64 = coordinate.lat;
     let longitude: f64 = coordinate.lng;
-    let coordinate_and_distance = state.kd_tree.nearest(&[latitude, longitude]).unwrap();
-    let coordinate = coordinate_and_distance.item;
+    let coordinate = state.kd_tree.nearest_neighbor(&state.kd_tree.root, &vec![latitude, longitude], 0).unwrap();
     Coordinate {
         lat: coordinate[0],
         lng: coordinate[1],
+        id: coordinate[2] as usize,
     }
 }

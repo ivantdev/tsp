@@ -11,15 +11,12 @@ fn rocket() -> _ {
     let coordinates_file = "nodes.txt";
     let arcs_file = "edges.txt";
     let graph = utils::create_adjacency_list_from_files(coordinates_file, arcs_file).unwrap();
-    let map_coordinates_to_id =
-        utils::create_coordinates_hashmap_from_file(coordinates_file).unwrap();
     let map_id_to_coordinates =
         utils::create_id_to_coordinates_hashmap_from_file(coordinates_file).unwrap();
     let kd_tree = utils::create_kd_tree_from_file(coordinates_file).unwrap();
 
     let state = Data {
         graph,
-        map_coordinates_to_id,
         map_id_to_coordinates,
         kd_tree,
     };
