@@ -28,8 +28,8 @@ impl Prioritiness for Distance {
 
 pub fn compare_coordinates_approximation() {
     // 1 Approximate coordinate with kd-tree
-    let nodes_file = "nodes_colombia.txt";
-    let test_file = "test.colombia";
+    let nodes_file = "nodes_españa.txt";
+    let test_file = "test.españa";
 
     let mut tests = vec![];
     for line in fs::read_to_string(test_file).unwrap().lines() {
