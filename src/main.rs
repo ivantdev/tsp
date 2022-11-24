@@ -23,8 +23,9 @@ async fn files(file: PathBuf) -> Option<NamedFile> {
 #[launch]
 fn rocket() -> _ {
     dotenv().ok();
-    let coordinates_file = String::from("new_nodes.txt");
-    let arcs_file = String::from("new_edges.txt");
+    let coordinates_file = env::var("COORDINATES_FILE").unwrap();
+    let arcs_file = env::var("ARCS_FILE").unwrap();
+
     let graph = utils::create_adjacency_list_from_files(&coordinates_file, &arcs_file).unwrap();
     let map_id_to_coordinates =
         utils::create_id_to_coordinates_hashmap_from_file(&coordinates_file).unwrap();
