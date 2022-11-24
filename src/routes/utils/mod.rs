@@ -36,7 +36,7 @@ pub fn compare_coordinates_approximation() {
         let mut split = line.split_whitespace();
         let lat = split.next().unwrap().parse::<f64>().unwrap();
         let lng = split.next().unwrap().parse::<f64>().unwrap();
-        let coordinate = Coordinate { lat, lng };
+        let coordinate = Coordinate { lat, lng, id: 0 };
         tests.push(coordinate);
     }
 
@@ -65,6 +65,7 @@ pub fn compare_coordinates_approximation() {
         let coordinate = Coordinate {
             lat: latitude,
             lng: longitude,
+            id: 0,
         };
 
         coordinates.push(coordinate);
@@ -78,7 +79,7 @@ pub fn compare_coordinates_approximation() {
     for test_coordinate in tests.iter() {
         let start = Instant::now();
         let _nearest_coordinate = kd_tree
-            .nearest(&[test_coordinate.lat, test_coordinate.lng])
+            .nearest_neighbor(&kd_tree.root, &vec![test_coordinate.lat, test_coordinate.lng], 0)
             .unwrap();
         let duration = start.elapsed();
         times_elapsed.push(duration);
@@ -96,7 +97,7 @@ pub fn compare_coordinates_approximation() {
     // 2 Approximate coordinate with array
 
     let mut min_distance = f64::MAX;
-    let mut _nearest_coordinate = Coordinate { lat: 0.0, lng: 0.0 };
+    let mut _nearest_coordinate = Coordinate { lat: 0.0, lng: 0.0, id: 0 };
     let mut times_elapsed = vec![];
     for test_coordinate in tests.iter() {
         let start = Instant::now();

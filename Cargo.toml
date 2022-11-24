@@ -20,6 +20,7 @@ rand = "0.8.5"
 md5 = "0.7.0"
 sha2 = "0.10.6"
 regex = "1.6.0"
+pdqselect = "0.1.1"
 
 [dependencies.rocket]
 version = "0.5.0-rc.2"
