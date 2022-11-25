@@ -2,9 +2,10 @@ use crate::schema::trips;
 use crate::db::models::users::User;
 use chrono::{self, NaiveDateTime};
 use diesel::{prelude::*, dsl};
+use serde::Serialize;
 use serde_json;
 
-#[derive(Identifiable, Queryable, Associations, Debug)]
+#[derive(Identifiable, Queryable, Associations, Serialize, Debug)]
 #[diesel(belongs_to(User))]
 #[diesel(table_name = trips)]
 pub struct Trip {

@@ -11,3 +11,8 @@ pub struct OkResponse {
 pub struct ErrorResponse {
     pub message: String,
 }
+
+#[derive(Serialize, Debug)]
+pub struct DataResponse<T> {
+    pub data: T,
+}

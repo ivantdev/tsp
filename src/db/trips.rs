@@ -6,12 +6,16 @@ use crate::utils::path::Path;
 use crate::schema;
 use diesel::prelude::*;
 
-pub fn get_trips_by_user_id(query_id: &i32) -> Result<Vec<Trip>, diesel::result::Error> {
+pub fn get_trips_by_user_id(query_id: &i32, page: i64) -> Result<Vec<Trip>, diesel::result::Error> {
+    use schema::trips::dsl::*;
 
     let user = get_user_by_id(&query_id).unwrap();
     
     let connection = &mut establish_connection();
     let results = Trip::belonging_to(&user)
+        .limit(5)
+        .offset(page)
+        .order_by(created_on.desc())
         .load::<Trip>(connection)
         .expect("Error loading trips");
 
