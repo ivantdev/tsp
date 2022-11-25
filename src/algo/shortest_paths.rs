@@ -210,7 +210,7 @@ mod tests {
         let end_point = rand::thread_rng().gen_range(0..g.edges.len());
         let start = Instant::now();
         let prev = dijkstra(&g, start_point, end_point).unwrap();
-        let path = reconstruct_path(prev.1, 1).unwrap();
+        let _path = reconstruct_path(prev.1, 1).unwrap();
         println!("Time: {:?}", start.elapsed());
     }
 
@@ -233,7 +233,7 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
+    #[ignore = "performance test"]
     fn compare_astar_and_dijkstra_running_times() {
         dotenv().ok();
         let coordinates_file = env::var("COORDINATES_FILE").unwrap();
@@ -245,12 +245,12 @@ mod tests {
 
         let start = Instant::now();
         let prev = dijkstra(&g, src, dest).unwrap();
-        let path = reconstruct_path(prev.1, dest).unwrap();
+        let _path = reconstruct_path(prev.1, dest).unwrap();
         println!("Dijkstra time: {:?}", start.elapsed());
 
         let start = Instant::now();
         let prev = astar(&g, &map, src, dest, &harvesine_heuristic).unwrap();
-        let path = reconstruct_path(prev.1, dest).unwrap();
+        let _path = reconstruct_path(prev.1, dest).unwrap();
         println!("A* time: {:?}", start.elapsed());
     }
 }
