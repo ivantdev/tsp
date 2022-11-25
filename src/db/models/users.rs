@@ -2,7 +2,8 @@ use crate::schema::users;
 use chrono::{self, NaiveDateTime};
 use diesel::prelude::*;
 
-#[derive(Queryable)]
+#[derive(Identifiable, Queryable, Debug)]
+#[diesel(table_name = users)]
 pub struct User {
     pub id: i32,
     pub name: Option<String>,
@@ -16,7 +17,7 @@ pub struct User {
     pub admin: bool,
 }
 
-#[derive(Insertable)]
+#[derive(Insertable, Debug)]
 #[diesel(table_name = users)]
 pub struct NewUser<'a> {
     pub name: &'a str,
