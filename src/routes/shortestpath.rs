@@ -8,7 +8,6 @@ use crate::{
 };
 use rocket::{http::Status, post, response::status::Custom, serde::json::Json, State};
 use serde::Serialize;
-
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
 pub struct DijkstraOutput {
@@ -42,17 +41,19 @@ pub fn shortestpath(
                 let destination = destination;
                 let shortest_path =
                     shortest_paths::dijkstra(&state.graph, source.id, destination.id).unwrap();
-                let path = shortest_paths::reconstruct_path(shortest_path.1, destination.id).unwrap();
+                let path =
+                    shortest_paths::reconstruct_path(shortest_path.1, destination.id).unwrap();
                 let path = path
                     .iter()
                     .map(|x| {
-                        let coordenate = state
-                            .map_id_to_coordinates
-                            .get(x)
-                            .unwrap();
-                            Coordinate { lat: coordenate.lat, lng: coordenate.lng, id: coordenate.id }
-                    }).collect();
-
+                        let coordenate = state.map_id_to_coordinates.get(x).unwrap();
+                        Coordinate {
+                            lat: coordenate.lat,
+                            lng: coordenate.lng,
+                            id: coordenate.id,
+                        }
+                    })
+                    .collect();
 
                 Ok(Json(DijkstraOutput {
                     path,
@@ -78,7 +79,10 @@ fn approximate_coordinate(state: &State<Data>, coordinate: &Coordinate) -> Coord
     //try to approximate coordinate using kd-tree
     let latitude: f64 = coordinate.lat;
     let longitude: f64 = coordinate.lng;
-    let coordinate = state.kd_tree.nearest_neighbor(&state.kd_tree.root, &vec![latitude, longitude], 0).unwrap();
+    let coordinate = state
+        .kd_tree
+        .nearest_neighbor(&state.kd_tree.root, &vec![latitude, longitude], 0)
+        .unwrap();
     Coordinate {
         lat: coordinate[0],
         lng: coordinate[1],
