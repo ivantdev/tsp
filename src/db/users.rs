@@ -1,6 +1,7 @@
 use crate::db::connection::{establish_connection};
 use crate::db::models::users::*;
 use crate::schema;
+use crate::utils::user::UserBriefDetails;
 use diesel::prelude::*;
 
 pub fn get_user(query: &str) -> Result<Vec<User>, diesel::result::Error> {
@@ -25,6 +26,17 @@ pub fn get_user_by_id(user_id: &i32) -> Result<User, diesel::result::Error> {
         .expect("Error loading user");
 
     Ok(result)
+}
+
+pub fn get_user_brief_details(user_id: &i32) -> Result<UserBriefDetails, diesel::result::Error> {
+    let user = get_user_by_id(user_id).unwrap();
+    let user = UserBriefDetails {
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        picture: user.picture,
+    };
+    Ok(user)
 }
 
 pub fn create_user(

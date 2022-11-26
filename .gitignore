@@ -8,7 +8,9 @@
 # environment variables
 .env
 
-
 .devcontainer
 test.*
 *.txt
+
+# rocket local settings
+Rocket.toml
