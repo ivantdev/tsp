@@ -1,4 +1,4 @@
-use crate::db::connection::establish_connection;
+use crate::db::connection::{establish_connection};
 use crate::db::models::users::*;
 use crate::schema;
 use diesel::prelude::*;
@@ -13,6 +13,18 @@ pub fn get_user(query: &str) -> Result<Vec<User>, diesel::result::Error> {
         .expect("Error loading user");
 
     Ok(results)
+}
+
+pub fn get_user_by_id(user_id: &i32) -> Result<User, diesel::result::Error> {
+    use self::schema::users::dsl::*;
+
+    let connection = &mut establish_connection();
+    let result = users
+        .find(user_id)
+        .get_result::<User>(connection)
+        .expect("Error loading user");
+
+    Ok(result)
 }
 
 pub fn create_user(
