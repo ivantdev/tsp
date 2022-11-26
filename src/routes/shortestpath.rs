@@ -1,5 +1,5 @@
 use crate::{
-    algo::shortest_paths,
+    algo::{shortest_paths, tsp_solver::TspSolver},
     global::Data,
     utils::{
         auth_token::Token, authenticate::authenticate, coordinate::Coordinate,
@@ -23,50 +23,25 @@ pub fn shortestpath(
 ) -> Result<Json<DijkstraOutput>, Custom<Json<ErrorResponse>>> {
     let token_raw = token_raw.tkn.split(' ').collect::<Vec<&str>>()[1];
     if authenticate(token_raw) {
-        let source = &data.locations[0].coordinates;
-        let destination = &data.locations[1].coordinates;
-
-        let source = approximate_coordinate(state, source);
-        let destination = approximate_coordinate(state, destination);
-
-        println!("source: {:?}", source);
-        println!("destination: {:?}", destination);
-
-        let source = state.map_id_to_coordinates.get(&source.id);
-        let destination = state.map_id_to_coordinates.get(&destination.id);
-
-        match (source, destination) {
-            (Some(source), Some(destination)) => {
-                let source = source;
-                let destination = destination;
-                let shortest_path =
-                    shortest_paths::dijkstra(&state.graph, source.id, destination.id).unwrap();
-                let path =
-                    shortest_paths::reconstruct_path(shortest_path.1, destination.id).unwrap();
-                let path = path
-                    .iter()
-                    .map(|x| {
-                        let coordenate = state.map_id_to_coordinates.get(x).unwrap();
-                        Coordinate {
-                            lat: coordenate.lat,
-                            lng: coordenate.lng,
-                            id: coordenate.id,
-                        }
-                    })
-                    .collect();
-
-                Ok(Json(DijkstraOutput {
-                    path,
-                    distance: shortest_path.0,
-                }))
-            }
-            _ => {
-                let response: ErrorResponse = ErrorResponse {
-                    message: "Invalid locations".to_string(),
-                };
-                Err(Custom(Status::Unauthorized, Json(response)))
-            }
+        let mut id_nodes: Vec<usize> = Vec::new();
+        for i in data.locations.iter() {
+            let coordinate = &i.coordinates;
+            let coordinate = approximate_coordinate(state, coordinate);
+            id_nodes.push(coordinate.id);
         }
+
+        let mut tsp = TspSolver::new(&state.graph, &state.map_id_to_coordinates, id_nodes);
+        let results = tsp.held_karp_solve().unwrap();
+
+        let mut path: Vec<Coordinate> = Vec::new();
+        for i in results {
+            let node = state.map_id_to_coordinates.get(&i).unwrap().clone();
+            path.push(node);
+        }
+        Ok(Json(DijkstraOutput {
+            path,
+            distance: 0.0,
+        }))
     } else {
         let response: ErrorResponse = ErrorResponse {
             message: "Invalid session token".to_string(),
