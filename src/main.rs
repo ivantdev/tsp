@@ -7,7 +7,12 @@ use rocket_cors::{AllowedOrigins, CorsOptions};
 use std::env;
 use dotenvy::dotenv;
 use std::path::{Path, PathBuf};
-use tsp::routes::{login::login, shortestpath::shortestpath, signup::sign_up, history::get_history};
+use tsp::routes::{login::login,
+    shortestpath::shortestpath,
+    signup::sign_up,
+    history::get_history,
+    user::get_user_details,
+};
 use tsp::{global::Data, utils};
 
 #[get("/")]
@@ -56,5 +61,7 @@ fn rocket() -> _ {
         .mount("/new-trip", routes![index])
         .mount("/signup", routes![index, sign_up])
         .mount("/login", routes![login, index])
+        .mount("/account", routes![index])
+        .mount("/user", routes![get_user_details])
         .attach(cors.to_cors().unwrap())
 }

@@ -24,7 +24,7 @@ pub fn authenticate(token: &str) -> bool {
     }
 }
 
-pub fn get_id_user_by_token(token: &str) -> Result<Claims, &str> {
+pub fn get_claims_by_token(token: &str) -> Result<Claims, &str> {
     dotenv().ok();
     let secret = env::var("SECRET_JWT").expect("SECRET_JWT must be set");
     let token_data = decode::<Claims>(token, &DecodingKey::from_secret(secret.as_ref()), &Validation::new(Algorithm::HS256));

@@ -1,7 +1,7 @@
 use rocket::serde::{Deserialize, Serialize};
 use crate::utils::coordinate::Coordinate;
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(crate = "rocket::serde")]
 pub struct Location {
     pub address: String,
@@ -10,7 +10,7 @@ pub struct Location {
     pub place_id: String
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(crate = "rocket::serde")]
 pub struct Trip {
     pub back_to_start: bool,
