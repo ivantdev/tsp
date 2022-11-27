@@ -32,7 +32,7 @@ impl<'a> TspSolver<'a> {
     // it is assume that the first node is the starting node
     pub fn held_karp_solve(&mut self) -> Result<Vec<usize>, Box<dyn Error>> {
         let dists = self.get_distance_matrix();
-        let n = dists.len(); // -1 because each node has n - 1 edges
+        let n = dists.len();
 
         // Maps each subset of the nodes to the cost to reach that subset, as well
         // as what node it passed before reaching this subset.
