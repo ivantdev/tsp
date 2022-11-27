@@ -7,7 +7,6 @@ pub mod response;
 pub mod salt;
 pub mod trip;
 pub mod path;
-pub mod locations;
 pub mod user;
 
 pub use crate::ds::{graph::Graph, kdtree::KdTree};

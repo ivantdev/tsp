@@ -9,7 +9,7 @@ pub struct TspSolver<'a> {
     pub id_to_coordinates: &'a HashMap<usize, Coordinate>,
     pub path: Vec<usize>,
     pub distance: f64,
-    pub nodes: Vec<usize>,
+    pub nodes: Vec<Coordinate>,
     pub new_nodes_to_original_nodes: HashMap<usize, usize>,
 }
 
@@ -17,7 +17,7 @@ impl<'a> TspSolver<'a> {
     pub fn new(
         road_network: &'a Graph,
         id_to_coordinates: &'a HashMap<usize, Coordinate>,
-        nodes: Vec<usize>,
+        nodes: Vec<Coordinate>,
     ) -> Self {
         Self {
             nodes,
@@ -112,21 +112,21 @@ impl<'a> TspSolver<'a> {
             .map(|node| self.new_nodes_to_original_nodes[node])
             .collect();
 
-        // expand path with A* to get the actual path
-        self.expand_path()
+        // return the actual path
+        Ok(self.path.to_owned())
     }
 
     // compute the distance between every pair of nodes and store it in the graph
     fn get_distance_matrix(&mut self) -> Vec<Vec<f64>> {
         let mut distance_matrix = vec![vec![0.0; self.nodes.len()]; self.nodes.len()];
         for i in 0..self.nodes.len() {
-            self.new_nodes_to_original_nodes.insert(i, self.nodes[i]);
+            self.new_nodes_to_original_nodes.insert(i, self.nodes[i].id);
             for j in 0..self.nodes.len() {
                 if i == j {
                     distance_matrix[i][j] = 0.0;
                 } else {
-                    let i_coord = self.id_to_coordinates.get(&self.nodes[i]).unwrap();
-                    let j_coord = self.id_to_coordinates.get(&self.nodes[j]).unwrap();
+                    let i_coord = &self.nodes[i];
+                    let j_coord = &self.nodes[j];
                     let i_location = Location::new(i_coord.lat, i_coord.lng);
                     let j_location = Location::new(j_coord.lat, j_coord.lng);
                     let distance = i_location.haversine_distance_to(&j_location);
@@ -175,11 +175,11 @@ mod tests {
         let id_to_coordinates =
             create_id_to_coordinates_hashmap_from_file(&coordinates_file).unwrap();
 
-        let mut tsp_solver = TspSolver::new(
-            &graph,
-            &id_to_coordinates,
-            vec![0, 1, 2, 3, 323, 7, 4, 6, 8, 9, 534, 3242, 5646, 2132, 4355],
-        );
-        let path = tsp_solver.held_karp_solve().unwrap();
+        // let mut tsp_solver = TspSolver::new(
+        //     &graph,
+        //     &id_to_coordinates,
+        //     vec![0, 1, 2, 3, 323, 7, 4, 6, 8, 9, 534, 3242, 5646, 2132, 4355],
+        // );
+        // let path = tsp_solver.held_karp_solve().unwrap();
     }
 }

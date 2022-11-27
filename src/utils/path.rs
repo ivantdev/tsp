@@ -10,6 +10,7 @@ pub struct  PathLocation {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Path {
+    pub title: String,
     pub path: Vec<Coordinate>,
     pub distance: f64,
     pub locations: Vec<PathLocation>

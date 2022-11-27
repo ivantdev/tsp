@@ -1,13 +1,14 @@
 use rocket::serde::{Deserialize, Serialize};
 use crate::utils::coordinate::Coordinate;
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 #[serde(crate = "rocket::serde")]
 pub struct Location {
     pub address: String,
     pub address_complement: String,
     pub coordinates: Coordinate,
-    pub place_id: String
+    pub place_id: String,
+    pub id: usize,
 }
 
 #[derive(Deserialize, Serialize, Debug)]

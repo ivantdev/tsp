@@ -1,9 +1,9 @@
 use crate::db::connection::establish_connection;
 use crate::db::models::trips::*;
-use crate::db::users::{get_user_by_id};
-use crate::utils::locations::Locations;
+use crate::db::users::get_user_by_id;
 use crate::utils::path::Path;
 use crate::schema;
+use crate::utils::trip::Location;
 use diesel::prelude::*;
 
 pub fn get_trips_by_user_id(query_id: &i32, page: i64) -> Result<Vec<Trip>, diesel::result::Error> {
@@ -25,7 +25,7 @@ pub fn get_trips_by_user_id(query_id: &i32, page: i64) -> Result<Vec<Trip>, dies
 pub fn create_trip(
         user_id: &i32,
         title: &String,
-        locations: &Locations,
+        locations: &Vec<Location>,
         path: &Path,
         distance: &f64,
         completed: &bool,
