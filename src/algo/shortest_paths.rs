@@ -3,22 +3,21 @@ pub use crate::ds::priority_queue::MinHeap;
 use crate::{
     ds::priority_queue::Prioritiness,
     utils::{
-        coordinate::{Coordinate, self}, create_adjacency_list_from_files,
+        coordinate::Coordinate, create_adjacency_list_from_files,
         create_id_to_coordinates_hashmap_from_file,
-    }, routes::shortestpath::approximate_coordinate, global::Data,
+    },
 };
 use dotenvy::dotenv;
 use geoutils::Location;
 use rand::Rng;
-use rocket::State;
 use std::{collections::HashMap, env, error::Error, time::Instant};
 
 const INFINITY: f64 = 9999999.0;
 
 #[derive(Copy, Clone, Debug)]
 pub struct NodeInfo {
-    pub distance: f64,
-    pub id: usize,
+    distance: f64,
+    id: usize,
 }
 
 impl NodeInfo {
