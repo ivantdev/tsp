@@ -14,7 +14,7 @@ pub fn get_trips_by_user_id(query_id: &i32, page: i64) -> Result<Vec<Trip>, dies
     let connection = &mut establish_connection();
     let results = Trip::belonging_to(&user)
         .limit(5)
-        .offset(page)
+        .offset(page*5)
         .order_by(created_on.desc())
         .load::<Trip>(connection)
         .expect("Error loading trips");
