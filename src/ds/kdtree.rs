@@ -162,7 +162,7 @@ mod tests {
     // use super::*;
     use crate::utils::create_kd_tree_from_file;
     use dotenvy::dotenv;
-    use std::{env};
+    use std::env;
 
     #[test]
     fn test_n_nearest_neighbor_kd_tree() {

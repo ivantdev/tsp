@@ -37,11 +37,11 @@ impl<'a> TspSolver<'a> {
         // Maps each subset of the nodes to the cost to reach that subset, as well
         // as what node it passed before reaching this subset.
         // Node subsets are represented as set bits.
-        let mut C = HashMap::<(i32, usize), (f64, usize)>::new();
+        let mut c = HashMap::<(i32, usize), (f64, usize)>::new();
 
         // Set transition cost from initial state
         for k in 1..n {
-            C.insert((1 << k, k), (dists[0][k], 0));
+            c.insert((1 << k, k), (dists[0][k], 0));
         }
 
         // Iterate subsets of increasing size
@@ -65,14 +65,14 @@ impl<'a> TspSolver<'a> {
                         }
 
                         let subset_without_k = subset ^ (1 << k);
-                        let cost = C.get(&(subset_without_k, m)).unwrap().0 + dists[m][k];
+                        let cost = c.get(&(subset_without_k, m)).unwrap().0 + dists[m][k];
                         if cost < min_prev {
                             min_prev = cost;
                             argmin_prev = m;
                         }
                     }
 
-                    C.insert((subset, k), (min_prev, argmin_prev));
+                    c.insert((subset, k), (min_prev, argmin_prev));
                 }
             }
         }
@@ -84,7 +84,7 @@ impl<'a> TspSolver<'a> {
         let mut min_cost = f64::INFINITY;
         let mut parent = 0;
         for k in 1..n {
-            let cost = C.get(&(subset, k)).unwrap().0 + dists[k][0];
+            let cost = c.get(&(subset, k)).unwrap().0 + dists[k][0];
             if cost < min_cost {
                 min_cost = cost;
                 parent = k;
@@ -96,7 +96,7 @@ impl<'a> TspSolver<'a> {
         //Backtrack to find the actual path
         for _ in 0..n - 1 {
             self.path.push(parent);
-            let tmp = C.get(&(subset, parent)).unwrap().1;
+            let tmp = c.get(&(subset, parent)).unwrap().1;
             subset = subset ^ (1 << parent);
             parent = tmp;
         }
@@ -137,7 +137,7 @@ impl<'a> TspSolver<'a> {
         distance_matrix
     }
 
-    fn expand_path(&mut self) -> Result<Vec<usize>, Box<dyn Error>> {
+    fn _expand_path(&mut self) -> Result<Vec<usize>, Box<dyn Error>> {
         let mut new_path = vec![];
         for i in 0..self.path.len() - 1 {
             let start = self.path[i];
@@ -159,7 +159,6 @@ impl<'a> TspSolver<'a> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use crate::utils::{
         create_adjacency_list_from_files, create_id_to_coordinates_hashmap_from_file,
     };
@@ -171,8 +170,8 @@ mod tests {
         dotenv().ok();
         let coordinates_file = env::var("COORDINATES_FILE").unwrap();
         let arcs_file = env::var("ARCS_FILE").unwrap();
-        let graph = create_adjacency_list_from_files(&coordinates_file, &arcs_file).unwrap();
-        let id_to_coordinates =
+        let _graph = create_adjacency_list_from_files(&coordinates_file, &arcs_file).unwrap();
+        let _id_to_coordinates =
             create_id_to_coordinates_hashmap_from_file(&coordinates_file).unwrap();
 
         // let mut tsp_solver = TspSolver::new(

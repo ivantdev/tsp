@@ -2,16 +2,12 @@ pub use crate::ds::graph::Graph;
 pub use crate::ds::priority_queue::MinHeap;
 use crate::{
     ds::priority_queue::Prioritiness,
-    utils::{
-        coordinate::{Coordinate, self}, create_adjacency_list_from_files,
-        create_id_to_coordinates_hashmap_from_file,
-    }, routes::shortestpath::approximate_coordinate, global::Data,
+    utils::
+        coordinate::Coordinate,
 };
-use dotenvy::dotenv;
 use geoutils::Location;
-use rand::Rng;
-use rocket::State;
-use std::{collections::HashMap, env, error::Error, time::Instant};
+use std::{collections::HashMap, error::Error};
+
 
 const INFINITY: f64 = 9999999.0;
 
@@ -158,6 +154,11 @@ pub fn reconstruct_path(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use dotenvy::dotenv;
+    use rand::Rng;
+    use std::{env, time::Instant};
+    use crate::utils::{create_adjacency_list_from_files,
+        create_id_to_coordinates_hashmap_from_file};
 
     #[test]
     fn test_dijkstra() {

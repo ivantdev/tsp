@@ -1,4 +1,4 @@
-use crate::db::connection::{establish_connection};
+use crate::db::connection::establish_connection;
 use crate::db::models::users::*;
 use crate::schema;
 use crate::utils::user::UserBriefDetails;
