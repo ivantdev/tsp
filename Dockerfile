@@ -26,8 +26,8 @@ COPY --from=builder /app/target/release/tsp .
 
 COPY static ./static
 COPY templates ./templates
-COPY nodes.txt .
-COPY edges.txt .
+RUN curl https://objects.ivant.dev/public/projects/tsp/nodes.txt --output nodes.txt
+RUN curl https://objects.ivant.dev/public/projects/tsp/edges.txt --output edges.txt
 
 EXPOSE 8000
 
