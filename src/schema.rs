@@ -4,6 +4,7 @@ diesel::table! {
     trips (id) {
         id -> Int4,
         user_id -> Int4,
+        #[max_length = 250]
         title -> Nullable<Varchar>,
         locations -> Json,
         path -> Json,
@@ -16,10 +17,15 @@ diesel::table! {
 diesel::table! {
     users (id) {
         id -> Int4,
+        #[max_length = 100]
         name -> Nullable<Varchar>,
+        #[max_length = 50]
         username -> Varchar,
+        #[max_length = 100]
         email -> Varchar,
+        #[max_length = 32]
         salt -> Varchar,
+        #[max_length = 128]
         password -> Varchar,
         picture -> Nullable<Text>,
         created_on -> Timestamp,

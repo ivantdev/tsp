@@ -28,6 +28,7 @@ async fn files(file: PathBuf) -> Option<NamedFile> {
 #[launch]
 fn rocket() -> _ {
     dotenv().ok();
+    println!("Starting server...");
     let coordinates_file = env::var("COORDINATES_FILE").unwrap();
     let arcs_file = env::var("ARCS_FILE").unwrap();
 
@@ -41,6 +42,7 @@ fn rocket() -> _ {
         map_id_to_coordinates,
         kd_tree,
     };
+    println!("Nodes in graph");
 
     let allowed_origins = AllowedOrigins::some_exact(&[env::var("FRONTEND_URL").unwrap()]);
 
@@ -53,6 +55,7 @@ fn rocket() -> _ {
                 .collect(),
         )
         .allow_credentials(true);
+    println!("Rocket ready to launch");
     rocket::build()
         .manage(state)
         .mount("/", routes![shortestpath, index, files])
