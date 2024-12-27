@@ -1,6 +1,7 @@
 /target
 *.co
 *.gr
+.DS_Store
 
 # vscode settings
 .vscode
@@ -14,3 +15,6 @@ test.*
 
 # rocket local settings
 Rocket.toml
+
+# cargo settings
+.cargo/*
