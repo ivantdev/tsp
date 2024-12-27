@@ -20,6 +20,12 @@ pub fn login(body: Json<Body<'_>>) -> Result<Json<OkResponse>, Custom<Json<Error
     
     match query_response {
         Ok(user) => {
+            if user.len() == 0 {
+                let response: ErrorResponse = ErrorResponse {
+                    message: "authentication failed".to_string()
+                };
+                return Err(Custom(Status::Unauthorized, Json(response)));
+            }
             let user = &user[0];
             let password_hashed: String = hash_password(&user.salt, body.password);
 
